@@ -1,5 +1,5 @@
 import "dotenv/config"
-import { getTitleFromVideo } from "./downloader/downloader"
+import { Downloader } from "./downloader/downloader"
 
 async function main() {
   try {
@@ -10,7 +10,10 @@ async function main() {
     // TODO - Check if the video is already downloaded
     // TODO - Login API Spotify
     // TODO - Download the video in mp3 if not already downloaded
-    const title = await getTitleFromVideo("https://www.youtube.com/watch?v=O4f58BU_Hbs")
+    // const title = await getTitleFromVideo("https://www.youtube.com/watch?v=O4f58BU_Hbs")
+    const downloader = new Downloader("https://www.youtube.com/watch?v=O4f58BU_Hbs")
+    await downloader.getSanitizedTitle()
+    console.log("Sanitized Title:", downloader.sanitizedTitle)
     // TODO - Get metadata from video title
     // TODO - Set metadata received to downloaded mp3 file
     // TODO - Reescan server
