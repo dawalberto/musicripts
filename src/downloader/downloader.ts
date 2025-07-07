@@ -1,7 +1,7 @@
 import { exec, ExecException } from "child_process"
-import { YOUTUBE_TITLE_TAGS_ENGLISH, YOUTUBE_TITLE_TAGS_SPANISH } from "./constants"
-import { getLogErrorMessage, logMessage } from "./logger"
-import { ErrorType, VideoData } from "./types"
+import { YOUTUBE_TITLE_TAGS_ENGLISH, YOUTUBE_TITLE_TAGS_SPANISH } from "../constants"
+import { ErrorType, VideoData } from "../types"
+import { getLogErrorMessage, logMessage } from "../utils/logger"
 
 export function getTitleFromVideo(url: string) {
   logMessage("🔤 Getting sanitized title from video...")

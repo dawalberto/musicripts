@@ -1,8 +1,10 @@
 import "dotenv/config"
-import { getTitleFromVideo } from "./modules/utils"
+import { getTitleFromVideo } from "./downloader/downloader"
 
 async function main() {
   try {
+    // TODO - Check if the environment variables are set and if not, throw an error
+    // TODO - Show help if no arguments are passed and exit
     // TODO - Check for dependencies, e.g., ffmpeg, youtube-dl, etc. if not installed, throw an error
     // TODO - Fetch videos from gists
     // TODO - Check if the video is already downloaded
