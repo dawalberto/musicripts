@@ -3,7 +3,7 @@ import fs from "fs"
 import { promisify } from "util"
 import { YOUTUBE_TITLE_TAGS_ENGLISH, YOUTUBE_TITLE_TAGS_SPANISH } from "../constants"
 import { ErrorType, VideoData } from "../types"
-import { Logger } from "../utils/logger"
+import logger from "../utils/logger"
 
 const execPromise = promisify(exec)
 
@@ -11,7 +11,6 @@ export class Downloader {
   private url: string
   private outputDir: string
   public sanitizedTitle: string | null = null
-  private downloadedFilePath: string | null = null
 
   constructor(url: string, outputDir = "./downloads-TODO") {
     this.url = url
@@ -19,9 +18,8 @@ export class Downloader {
   }
 
   public async getSanitizedTitle(): Promise<void> {
-    const logger = new Logger("🔤 Getting sanitized title from video...")
     try {
-      logger.logLoading()
+      logger.start("🔤 Getting sanitized title from video...")
       const { stdout } = await execPromise(`yt-dlp -j "${this.url}"`)
       const info: VideoData = JSON.parse(stdout)
       const title = info.title || info.fulltitle
@@ -34,9 +32,9 @@ export class Downloader {
         ...YOUTUBE_TITLE_TAGS_ENGLISH,
         ...YOUTUBE_TITLE_TAGS_SPANISH,
       ])
-      logger.logSuccess("🔤 Sanitized title retrieved successfully.")
+      logger.succeed()
     } catch (err: any) {
-      logger.logError(
+      logger.fail(
         ErrorType.GET_VIDEO_TITLE_ERROR,
         "getSanitizedTitle()",
         err.stderr || err.message || err

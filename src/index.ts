@@ -1,8 +1,9 @@
 import "dotenv/config"
 import { Downloader } from "./downloader/downloader"
+import logger from "./utils/logger"
 
 async function main() {
-  const url = "https://www.youtube.com/watch?v=O4f58BU_Hbs" // this will be replaced with the actual URL from the gist in a loop
+  const url = "https://www.youtube.com/watch?v=Opp4f58BU_Hbs" // this will be replaced with the actual URL from the gist in a loop
   try {
     // TODO - Check if the environment variables are set and if not, throw an error
     // TODO - Show help if no arguments are passed and exit
@@ -20,6 +21,7 @@ async function main() {
     // TODO - Send notification
     // process.exit(0)
   } catch (error) {
+    logger.failAndPersist()
     console.error("\x1b[1m❌ ERROR:\x1b[0m", error)
     process.exit(1)
   }
