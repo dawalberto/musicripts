@@ -1,10 +1,9 @@
-// downloader/Downloader.ts
 import { exec } from "child_process"
 import fs from "fs"
 import { promisify } from "util"
 import { YOUTUBE_TITLE_TAGS_ENGLISH, YOUTUBE_TITLE_TAGS_SPANISH } from "../constants"
 import { ErrorType, VideoData } from "../types"
-import { getLogErrorMessage, logMessage } from "../utils/logger"
+import { Logger } from "../utils/logger"
 
 const execPromise = promisify(exec)
 
@@ -20,8 +19,9 @@ export class Downloader {
   }
 
   public async getSanitizedTitle(): Promise<void> {
-    logMessage("🔤 Getting sanitized title from video...")
+    const logger = new Logger("🔤 Getting sanitized title from video...")
     try {
+      logger.logLoading()
       const { stdout } = await execPromise(`yt-dlp -j "${this.url}"`)
       const info: VideoData = JSON.parse(stdout)
       const title = info.title || info.fulltitle
@@ -34,17 +34,18 @@ export class Downloader {
         ...YOUTUBE_TITLE_TAGS_ENGLISH,
         ...YOUTUBE_TITLE_TAGS_SPANISH,
       ])
+      logger.logSuccess("🔤 Sanitized title retrieved successfully.")
     } catch (err: any) {
-      const errorMsg = getLogErrorMessage(
+      logger.logError(
         ErrorType.GET_VIDEO_TITLE_ERROR,
-        err.stderr || err.message
+        "getSanitizedTitle()",
+        err.stderr || err.message || err
       )
-      throw new Error(errorMsg)
+      throw new Error(err)
     }
   }
 
   public async downloadAudio() {
-    logMessage("🎧 Downloading audio...")
     // TODO
   }
 

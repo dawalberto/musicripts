@@ -1,13 +1,29 @@
+import { bold, greenBright, red, redBright } from "colorette"
+import ora, { Ora } from "ora"
 import { ErrorType } from "../types"
 
-export function getLogErrorMessage(type: ErrorType, details: string) {
-  return `\n    \x1b[1mType:\x1b[0m ${type}\n    \x1b[1mDetails:\x1b[0m ${details}\n`
-}
+export class Logger {
+  #spinner: Ora
+  #message: string
 
-export function logSuccessMessage(message: string) {
-  return console.log(`\x1b[1m✅ SUCCESS:\x1b[0m ${message}`)
-}
+  constructor(message: string) {
+    this.#spinner = ora(message)
+    this.#message = message
+  }
 
-export function logMessage(message: string) {
-  return console.log(`\x1b[1mℹ️  MESSAGE:\x1b[0m ${message}`)
+  logLoading(message?: string) {
+    this.#spinner.start(message || this.#message)
+  }
+
+  logSuccess(message?: string) {
+    this.#spinner.succeed(greenBright(message || this.#message))
+  }
+
+  logError(type: ErrorType, where: string, message?: string) {
+    this.#spinner.fail(
+      `${bold(red("ERROR:"))} \n ${redBright("TYPE:")} ${type} \n ${redBright(
+        "WHERE:"
+      )} ${where} \n ${redBright("DETAILS:")} ${message || this.#message}`
+    )
+  }
 }

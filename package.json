@@ -24,6 +24,8 @@
     "typescript": "^5.8.3"
   },
   "dependencies": {
-    "dotenv": "^17.0.1"
+    "colorette": "^2.0.20",
+    "dotenv": "^17.0.1",
+    "ora": "^8.2.0"
   }
 }
