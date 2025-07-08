@@ -1,13 +1,13 @@
 import "dotenv/config"
 import { Downloader } from "./downloader/downloader"
+import { AppInitializer } from "./utils/app-initializer"
 import logger from "./utils/logger"
 
 async function main() {
-  const url = "https://www.youtube.com/watch?v=Opp4f58BU_Hbs" // this will be replaced with the actual URL from the gist in a loop
+  const url = "https://www.youtube.com/watch?v=O4f58BU_Hbs" // this will be replaced with the actual URL from the gist in a loop
   try {
-    // TODO - Check if the environment variables are set and if not, throw an error
+    new AppInitializer()
     // TODO - Show help if no arguments are passed and exit
-    // TODO - Check for dependencies, e.g., ffmpeg, youtube-dl, etc. if not installed, throw an error
     // TODO - Fetch videos from gists
     // TODO - Check if the video is already downloaded
     // TODO - Login API Spotify
