@@ -1,4 +1,4 @@
-import { greenBright, red, redBright } from "colorette"
+import { greenBright, red, redBright, yellowBright } from "colorette"
 import ora, { Ora } from "ora"
 import { ErrorType } from "../types"
 
@@ -19,6 +19,15 @@ class Logger {
     if (this.#spinner?.isSpinning) {
       this.#spinner.succeed(greenBright(message || this.#message))
       this.#spinner = null
+    }
+  }
+
+  warn(message: string) {
+    if (this.#spinner?.isSpinning) {
+      this.#spinner.warn(yellowBright(message))
+      this.#spinner = null
+    } else {
+      console.warn(yellowBright(message))
     }
   }
 
