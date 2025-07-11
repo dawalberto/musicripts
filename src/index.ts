@@ -1,7 +1,8 @@
 import "dotenv/config"
 import DownloadSources from "./download-sources/download-sources"
-import { Downloader } from "./downloader/downloader"
-import { DownloadSourceFrom } from "./types"
+import { DownloadSourceFrom } from "./download-sources/types"
+import Downloader from "./downloader/downloader"
+import Metadater from "./metadater/metadater"
 import { AppInitializer } from "./utils/app-initializer"
 import logger from "./utils/logger"
 
@@ -16,9 +17,17 @@ async function main() {
 
   try {
     new AppInitializer()
+
+    const metadater = new Metadater()
+    await metadater.init()
+    await metadater.getMetadataFromQuery(
+      "RESIDENTE  BZRP Music Sessions 49 bizarrap biza bisa bizzarrap bzrp bzrp music sessions trap musica latina argentina méxico españa hip hop rap biza session reggaeton music session USA Puerto rico Nicky jam el biza la soltó el dj anuel España"
+    )
+    process.exit(0)
+
     const downloaderSources = new DownloadSources({
-      downloadFrom: DownloadSourceFrom.PLAYLISTS_GIST,
-      urlSourceToDownload: playlistsGistUrl,
+      downloadFrom: DownloadSourceFrom.SONGS_GIST,
+      urlSourceToDownload: songsGistUrl,
     })
     // TODO - Show help if no arguments are passed and exit
     const videosUrlsToDownload = await downloaderSources.getSongsUrlsToDownload()

@@ -6,12 +6,13 @@ import {
   YOUTUBE_TITLE_TAGS_ENGLISH,
   YOUTUBE_TITLE_TAGS_SPANISH,
 } from "../constants"
-import { ErrorType, VideoData } from "../types"
+import { ErrorTypes } from "../types/errors"
 import logger from "../utils/logger"
+import { DownloadedSongsData, VideoData } from "./types"
 
 const execPromise = promisify(exec)
 
-export class Downloader {
+class Downloader {
   private videosUrlsToDownload: string[]
   private outputDir: string = process.env.OUTPUT_DIR || ""
 
@@ -32,52 +33,91 @@ export class Downloader {
   async download() {
     logger.start("📥 Downloading videos as mp3 files...")
     for (const videoUrl of this.videosUrlsToDownload) {
-      const title = await this.getSanitizedTitle(videoUrl)
+      await this.downloadSong(videoUrl)
       // console.log("💣🚨 title", title)
     }
     logger.succeed()
   }
 
-  private async getSanitizedTitle(videoUrl: string): Promise<string> {
+  private async downloadSong(videoUrl: string): Promise<void> {
     try {
-      const { stdout } = await execPromise(`yt-dlp -j "${videoUrl}"`)
-      const info: VideoData = JSON.parse(stdout)
-      const title = info.title || info.fulltitle
-      console.log(
-        "💣🚨 info",
-        JSON.stringify(
-          {
-            title,
-            tags: info.tags?.join(", ") || "No tags found",
-            channel: info.channel,
-            uploader: info.uploader,
-          },
-          null,
-          2
-        )
-      )
+      const videoData = await this.getVideoData(videoUrl)
+      const downloadedSongPath = await this.downloadSongAndGetPath(videoUrl)
 
-      if (!title) {
-        throw new Error("No title found in video.")
+      const querySearch = this.getQuerySearch({
+        title: this.sanitizeTitle(videoData.title || videoData.fulltitle || "", [
+          ...YOUTUBE_TITLE_TAGS_ENGLISH,
+          ...YOUTUBE_TITLE_TAGS_SPANISH,
+          ...CHARACTERS_TO_REMOVE,
+        ]),
+        tags: videoData.tags,
+        channel: videoData.channel,
+        uploader: videoData.uploader,
+      })
+
+      const downloadedSongData: DownloadedSongsData = {
+        id: videoUrl,
+        path: downloadedSongPath,
+        spotifyQuerySearch: querySearch,
       }
-
-      return this.sanitizeTitle(title, [
-        ...YOUTUBE_TITLE_TAGS_ENGLISH,
-        ...YOUTUBE_TITLE_TAGS_SPANISH,
-        ...CHARACTERS_TO_REMOVE,
-      ])
+      logger.info(JSON.stringify(downloadedSongData, null, 2))
     } catch (err: any) {
-      logger.fail(
-        ErrorType.GET_VIDEO_TITLE_ERROR,
-        "getSanitizedTitle()",
-        err.stderr || err.message || err
-      )
+      logger.fail(ErrorTypes.DOWNLOAD, "downloadSong()", err.stderr || err.message || err)
       throw new Error(err)
     }
   }
 
-  private async downloadAudio() {
-    // TODO - Download mp3 in the best quality available, restrict-filnames to save them in
+  private async getVideoData(videoUrl: string): Promise<VideoData> {
+    try {
+      const cmd = `yt-dlp -j "${videoUrl}"`
+      const { stdout } = await execPromise(cmd)
+      return JSON.parse(stdout) as VideoData
+    } catch (err: any) {
+      logger.fail(ErrorTypes.GET_VIDEO_DATA, "getVideoData()", err.stderr || err.message || err)
+      throw new Error(err)
+    }
+  }
+
+  private async downloadSongAndGetPath(videoUrl: string): Promise<string> {
+    try {
+      const downloadCmd = `yt-dlp -f bestaudio -x --audio-format mp3 --audio-quality 0 --restrict-filenames --download-archive "${process.env.DOWNLOADS_ARCHIVE_PATH}" -o "${this.outputDir}/%(title)s.%(ext)s" "${videoUrl}"`
+      const { stdout: downloadLog } = await execPromise(downloadCmd)
+      const songPath = this.getSongPathFromLog(downloadLog)
+
+      if (!songPath) {
+        logger.fail(
+          ErrorTypes.DOWNLOAD,
+          "downloadSongAndGetPath()",
+          "No path found. Failed to extract song path from download log."
+        )
+        throw new Error("Failed to extract song path from download log.")
+      }
+
+      if (!fs.existsSync(songPath)) {
+        logger.fail(
+          ErrorTypes.DOWNLOAD,
+          "downloadSongAndGetPath()",
+          `Downloaded file does not exist at path: ${songPath}`
+        )
+        throw new Error(`Downloaded file does not exist at path: ${songPath}`)
+      }
+      return songPath
+    } catch (err: any) {
+      logger.fail(ErrorTypes.DOWNLOAD, "downloadSongAndGetPath()", err.stderr || err.message || err)
+      throw new Error(err)
+    }
+  }
+
+  private getQuerySearch({ title, tags, channel, uploader }: VideoData): string {
+    const extraInfo = tags?.length
+      ? tags?.join(" ").slice(0, 250 - (title?.length || 0)) || ""
+      : channel || uploader || ""
+    return `${title} ${extraInfo}`
+  }
+
+  private getSongPathFromLog(log: string): string | null {
+    const match = log.match(/\[ExtractAudio\] Destination: (.+\.mp3)/)
+    return match ? match[1].trim() : null
   }
 
   private sanitizeTitle(title: string, tags: string[]): string {
@@ -94,3 +134,5 @@ export class Downloader {
     }
   }
 }
+
+export default Downloader

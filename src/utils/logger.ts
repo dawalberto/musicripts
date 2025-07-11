@@ -1,6 +1,6 @@
-import { greenBright, red, redBright, yellowBright } from "colorette"
+import { blueBright, greenBright, red, redBright, yellowBright } from "colorette"
 import ora, { Ora } from "ora"
-import { ErrorType } from "../types"
+import { ErrorTypes } from "../downloader/types"
 
 class Logger {
   #spinner: Ora | null = null
@@ -13,6 +13,14 @@ class Logger {
 
     this.#message = message
     this.#spinner = ora(message).start()
+  }
+
+  info(message: string) {
+    if (this.#spinner?.isSpinning) {
+      this.#spinner.info(blueBright(message))
+    } else {
+      console.info(blueBright(message))
+    }
   }
 
   succeed(message?: string) {
@@ -31,7 +39,7 @@ class Logger {
     }
   }
 
-  fail(type: ErrorType, where: string, message?: string) {
+  fail(type: ErrorTypes, where: string, message?: string) {
     if (this.#spinner?.isSpinning) {
       this.#spinner.fail(
         `${red(this.#message)} \n ${redBright("ERROR TYPE:")} ${type} \n ${redBright(

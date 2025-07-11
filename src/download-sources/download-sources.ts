@@ -1,7 +1,8 @@
 import { exec } from "child_process"
 import { promisify } from "util"
-import { DownloadSourceFrom, ErrorType } from "../types"
+import { ErrorTypes } from "../types/errors"
 import logger from "../utils/logger"
+import { DownloadSourceFrom } from "./types"
 
 const execPromise = promisify(exec)
 
@@ -50,7 +51,7 @@ class DownloadSources {
       const response = await fetch(this.urlSourceToDownload)
       if (!response.ok) {
         logger.fail(
-          ErrorType.FETCH_ERROR,
+          ErrorTypes.FETCH,
           "fetchGist()",
           `Failed to fetch from ${this.urlSourceToDownload}: ${response.statusText}`
         )
@@ -64,7 +65,7 @@ class DownloadSources {
 
       if (!text || !urls.length) {
         logger.fail(
-          ErrorType.GET_URLS_FROM_GIST,
+          ErrorTypes.GET_URLS_FROM_GIST,
           "fetchGist()",
           `No URLs found in gist at ${this.urlSourceToDownload}`
         )
@@ -75,7 +76,7 @@ class DownloadSources {
       return urls
     } catch (error) {
       logger.fail(
-        ErrorType.GET_URLS_FROM_GIST,
+        ErrorTypes.GET_URLS_FROM_GIST,
         "fetchGist()",
         error instanceof Error ? error.message : String(error)
       )
@@ -88,7 +89,7 @@ class DownloadSources {
       const playlistUrls = playlistUrl ? [playlistUrl] : await this.fetchGist()
       if (!playlistUrls.length) {
         logger.fail(
-          ErrorType.GET_URLS_FROM_PLAYLIST,
+          ErrorTypes.GET_URLS_FROM_PLAYLIST,
           "getSongsIdsFromPlaylistUrls()",
           "No URLs found in playlist"
         )
@@ -111,7 +112,7 @@ class DownloadSources {
       return songIds
     } catch (error) {
       logger.fail(
-        ErrorType.GET_URLS_FROM_PLAYLIST,
+        ErrorTypes.GET_URLS_FROM_PLAYLIST,
         "getSongsIdsFromPlaylistUrls()",
         error instanceof Error ? error.message : String(error)
       )
