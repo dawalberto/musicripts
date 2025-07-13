@@ -11,7 +11,7 @@ export type VideoData = {
   is_live?: boolean
 }
 
-export type DownloadedSongsData = {
+export type DownloadedSongData = {
   id: string
   path: string
   spotifyQuerySearch: string

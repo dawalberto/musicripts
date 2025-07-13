@@ -1,6 +1,6 @@
 import { execSync } from "child_process"
 import { DEPENDENCIES_REQUIRED, ENVIRONMENT_VARIABLES_REQUIRED } from "../config"
-import { ErrorTypes } from "../downloader/types"
+import { ErrorTypes } from "../types/errors"
 import logger from "./logger"
 
 export class AppInitializer {

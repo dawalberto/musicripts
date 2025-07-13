@@ -8,7 +8,7 @@ import {
 } from "../constants"
 import { ErrorTypes } from "../types/errors"
 import logger from "../utils/logger"
-import { DownloadedSongsData, VideoData } from "./types"
+import { DownloadedSongData, VideoData } from "./types"
 
 const execPromise = promisify(exec)
 
@@ -32,35 +32,47 @@ class Downloader {
 
   async download() {
     logger.start("📥 Downloading videos as mp3 files...")
-    for (const videoUrl of this.videosUrlsToDownload) {
-      await this.downloadSong(videoUrl)
-      // console.log("💣🚨 title", title)
+
+    const downloadedSongsData: DownloadedSongData[] = []
+
+    for (let i = 0; i < this.videosUrlsToDownload.length; i++) {
+      const videoUrl = this.videosUrlsToDownload[i]
+      try {
+        downloadedSongsData.push(await this.downloadSong(videoUrl))
+        logger.start(`Downloaded ${i + 1} of ${this.videosUrlsToDownload.length} songs`)
+      } catch (err: any) {
+        logger.fail(ErrorTypes.DOWNLOAD, "download()", err.stderr || err.message || err)
+      }
     }
+
     logger.succeed()
+    return downloadedSongsData
   }
 
-  private async downloadSong(videoUrl: string): Promise<void> {
+  private async downloadSong(videoUrl: string): Promise<DownloadedSongData> {
     try {
       const videoData = await this.getVideoData(videoUrl)
+      const title = this.sanitizeTitle(videoData.title || videoData.fulltitle || "", [
+        ...YOUTUBE_TITLE_TAGS_ENGLISH,
+        ...YOUTUBE_TITLE_TAGS_SPANISH,
+        ...CHARACTERS_TO_REMOVE,
+      ])
+      logger.start(`Downloading song: ${title}`)
       const downloadedSongPath = await this.downloadSongAndGetPath(videoUrl)
 
       const querySearch = this.getQuerySearch({
-        title: this.sanitizeTitle(videoData.title || videoData.fulltitle || "", [
-          ...YOUTUBE_TITLE_TAGS_ENGLISH,
-          ...YOUTUBE_TITLE_TAGS_SPANISH,
-          ...CHARACTERS_TO_REMOVE,
-        ]),
+        title,
         tags: videoData.tags,
         channel: videoData.channel,
         uploader: videoData.uploader,
       })
 
-      const downloadedSongData: DownloadedSongsData = {
+      logger.succeed()
+      return {
         id: videoUrl,
         path: downloadedSongPath,
         spotifyQuerySearch: querySearch,
       }
-      logger.info(JSON.stringify(downloadedSongData, null, 2))
     } catch (err: any) {
       logger.fail(ErrorTypes.DOWNLOAD, "downloadSong()", err.stderr || err.message || err)
       throw new Error(err)
