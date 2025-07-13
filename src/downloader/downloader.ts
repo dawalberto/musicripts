@@ -75,6 +75,7 @@ class Downloader {
         id: videoUrl,
         path: downloadedSongPath,
         title: title,
+        artist: videoData.channel || videoData.uploader || "",
         spotifyQuerySearch: title,
       }
     } catch (err: any) {

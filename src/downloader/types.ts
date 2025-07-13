@@ -15,5 +15,6 @@ export type DownloadedSongData = {
   id: string
   path: string
   title: string
+  artist: string
   spotifyQuerySearch: string
 }

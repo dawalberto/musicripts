@@ -27,11 +27,11 @@ class Metadater {
         logger.succeed()
       } else {
         logger.warn(
-          `No metadata found for song: ${song.title}. Setting default metadata(only title).`
+          `No metadata found for song: ${song.title}. Setting default metadata(only title and artist).`
         )
         this.setMetadataToMp3(song.path, {
           title: song.title,
-          artist: [],
+          artist: [song.artist],
           album: "",
           albumArtist: [],
           trackNumber: 0,
@@ -155,12 +155,7 @@ class Metadater {
       const token = data.access_token
 
       if (!token) {
-        logger.fail(
-          ErrorTypes.METADATA_AUTH,
-          "getSpotifyToken()",
-          "There was an error obtaining the Spotify token"
-        )
-        throw new Error("No token received from Spotify API")
+        throw new Error("Failed to obtain Spotify token")
       }
 
       this.spotifyToken = token
@@ -169,9 +164,10 @@ class Metadater {
       logger.fail(
         ErrorTypes.METADATA_AUTH,
         "getSpotifyToken()",
-        "There was an error obtaining the Spotify token"
+        "There was an error obtaining the Spotify token. Only the title and artist will be set as metadata."
       )
-      throw new Error(error)
+      this.spotifyToken = null
+      return
     }
   }
 
