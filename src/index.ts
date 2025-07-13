@@ -5,6 +5,7 @@ import Downloader from "./downloader/downloader"
 import Metadater from "./metadater/metadater"
 import { AppInitializer } from "./utils/app-initializer"
 import logger from "./utils/logger"
+import MusicServer from "./utils/music-server"
 
 async function main() {
   const songUrl = "https://www.youtube.com/watch?v=O4f58BU_Hbs" // single song
@@ -28,20 +29,17 @@ async function main() {
       logger.warn("No URLs to download found or all urls already downloaded previously.")
       process.exit(0)
     }
-    console.log("🦊 videosUrlsToDownload", videosUrlsToDownload)
 
     const downloader = new Downloader({ videosUrlsToDownload })
     const downloadedSongsData = await downloader.download()
-    console.log("💣🚨 downloadedSongsData", downloadedSongsData)
-    // TODO - Login API Spotify (SUBTODO - Make it optional)
+
     const metadater = new Metadater(downloadedSongsData)
     await metadater.init()
-    // TODO - Get metadata from video title
-    // TODO - Download the video in mp3 if not already downloaded
-    // TODO - Set metadata received to downloaded mp3 file
-    // TODO - Reescan server
+
+    const musicServer = new MusicServer()
+    await musicServer.rescanLibrary()
     // TODO - Send notification
-    // process.exit(0)
+    process.exit(0)
   } catch (error) {
     logger.failAndPersist()
     console.error("\x1b[1m❌ ERROR:\x1b[0m", error)
