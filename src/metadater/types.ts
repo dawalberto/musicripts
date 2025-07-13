@@ -81,7 +81,7 @@ export type SongMetadataTags = {
   trackNumber: number
   discNumber: number
   date: string
-  isrc: string | null
+  ISRC: string | null
   explicit: boolean
   coverart: string | null
 }

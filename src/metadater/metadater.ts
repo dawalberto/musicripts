@@ -1,3 +1,4 @@
+import NodeID3 from "node-id3"
 import { DownloadedSongData } from "../downloader/types"
 import { ErrorTypes } from "../types/errors"
 import logger from "../utils/logger"
@@ -13,16 +14,33 @@ class Metadater {
 
   async init(): Promise<void> {
     await this.getSpotifyToken()
+    await this.setMetadataToDownloadedSongsData()
+    logger.succeed("✅ Metadata set to downloaded songs")
+  }
+
+  private async setMetadataToDownloadedSongsData(): Promise<void> {
     for (const song of this.downloadedSongsData) {
       logger.start(`Fetching and setting metadata for song: ${song.title}`)
       const metadata = await this.getMetadataFromQuery(song.spotifyQuerySearch)
       if (metadata) {
-        // TODO - Set metadata to the song
+        await this.setMetadataToMp3(song.path, metadata)
         logger.succeed()
-        console.log("💣🚨 metadata", JSON.stringify(metadata, null, 2))
       } else {
-        logger.warn(`No metadata found for song: ${song}`)
-        // TODO - Set just title and artist if no metadata found
+        logger.warn(
+          `No metadata found for song: ${song.title}. Setting default metadata(only title).`
+        )
+        this.setMetadataToMp3(song.path, {
+          title: song.title,
+          artist: [],
+          album: "",
+          albumArtist: [],
+          trackNumber: 0,
+          discNumber: 0,
+          date: "",
+          ISRC: null,
+          explicit: false,
+          coverart: null,
+        })
       }
     }
   }
@@ -54,6 +72,63 @@ class Metadater {
         ErrorTypes.GET_METADATA_FROM_QUERY,
         "getMetadataFromQuery()",
         `There was an error getting metadata for query: ${query}`
+      )
+      throw new Error(error)
+    }
+  }
+
+  private async setMetadataToMp3(mp3Path: string, metadata: SongMetadataTags): Promise<void> {
+    try {
+      const separator = " / "
+      let imageBuffer: Buffer | undefined
+
+      if (metadata.coverart) {
+        const response = await fetch(metadata.coverart)
+        imageBuffer = Buffer.from(await response.arrayBuffer())
+      }
+
+      const date = metadata.date.length >= 4 ? metadata.date : undefined
+      const year = metadata.date.length >= 4 ? metadata.date.slice(0, 4) : metadata.date
+
+      const tags: NodeID3.Tags = {
+        title: metadata.title,
+        artist: metadata.artist.join(separator),
+        album: metadata.album,
+        performerInfo: metadata.albumArtist.join(separator),
+        trackNumber: metadata.trackNumber.toString(),
+        partOfSet: metadata.discNumber.toString(),
+        date,
+        year,
+        comment: {
+          language: "eng",
+          text: `Explicit: ${metadata.explicit}`,
+        },
+        ISRC: metadata.ISRC || "",
+        image: imageBuffer
+          ? {
+              mime: "image/jpeg",
+              type: { id: 3, name: "front cover" },
+              description: "Cover",
+              imageBuffer,
+            }
+          : undefined,
+      }
+
+      const result = NodeID3.write(tags, mp3Path)
+
+      if (result !== true) {
+        logger.fail(
+          ErrorTypes.SET_METADATA_TO_MP3,
+          "setMetadataToMp3()",
+          `Failed to write metadata to MP3 file: ${mp3Path}. Result: ${result}`
+        )
+        throw new Error(`Failed to write metadata to MP3 file: ${mp3Path}. Result: ${result}`)
+      }
+    } catch (error: any) {
+      logger.fail(
+        ErrorTypes.SET_METADATA_TO_MP3,
+        "setMetadataToMp3()",
+        `There was an error setting metadata to MP3 file: ${mp3Path}`
       )
       throw new Error(error)
     }
@@ -111,7 +186,7 @@ class Metadater {
       trackNumber: trackData.track_number,
       discNumber: trackData.disc_number,
       date: album.release_date,
-      isrc: trackData.external_ids?.isrc || null,
+      ISRC: trackData.external_ids?.isrc || null,
       explicit: trackData.explicit,
       coverart: album.images?.[0]?.url || null,
     }
