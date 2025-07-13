@@ -1,11 +1,13 @@
 export type SpotifyTrackSearchResponse = {
-  href: string
-  limit: number
-  next: string
-  offset: number
-  previous: any
-  total: number
-  items: Array<SpotifyTrack>
+  tracks: {
+    href: string
+    limit: number
+    next: string
+    offset: number
+    previous: any
+    total: number
+    items: Array<SpotifyTrack>
+  }
 }
 
 export type SpotifyTrack = {

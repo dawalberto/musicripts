@@ -14,19 +14,21 @@ class Metadater {
   async init(): Promise<void> {
     await this.getSpotifyToken()
     for (const song of this.downloadedSongsData) {
+      logger.start(`Fetching and setting metadata for song: ${song.title}`)
       const metadata = await this.getMetadataFromQuery(song.spotifyQuerySearch)
       if (metadata) {
         // TODO - Set metadata to the song
-        logger.succeed(`Metadata set for song: ${JSON.stringify(metadata, null, 2)}`)
+        logger.succeed()
+        console.log("💣🚨 metadata", JSON.stringify(metadata, null, 2))
       } else {
         logger.warn(`No metadata found for song: ${song}`)
+        // TODO - Set just title and artist if no metadata found
       }
     }
   }
 
   private async getMetadataFromQuery(query: string): Promise<SongMetadataTags | null> {
     try {
-      logger.start(`🔍 Fetching metadata for query: ${query.slice(0, 12)}...`)
       if (!this.spotifyToken) {
         logger.warn("No Spotify token available")
         return null
@@ -41,13 +43,11 @@ class Metadater {
         }
       )
 
-      logger.succeed()
       const data: SpotifyTrackSearchResponse = await response.json()
-      if (!data || !data.items || data.items.length === 0) {
-        logger.warn("No tracks found for the given query")
+      if (!data || !data.tracks || data.tracks.items.length === 0) {
         return null
       }
-      const trackData: SpotifyTrack = data.items[0]
+      const trackData: SpotifyTrack = data.tracks.items[0]
       return this.spotifyTrackDataToSongMetadataTags(trackData)
     } catch (error: any) {
       logger.fail(

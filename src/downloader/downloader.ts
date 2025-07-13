@@ -57,21 +57,25 @@ class Downloader {
         ...YOUTUBE_TITLE_TAGS_SPANISH,
         ...CHARACTERS_TO_REMOVE,
       ])
+
+      if (!title) {
+        logger.fail(
+          ErrorTypes.DOWNLOAD,
+          "downloadSong()",
+          "No title found for the video. Cannot proceed with download."
+        )
+        throw new Error("No title found for the video. Cannot proceed with download.")
+      }
+
       logger.start(`Downloading song: ${title}`)
       const downloadedSongPath = await this.downloadSongAndGetPath(videoUrl)
-
-      const querySearch = this.getQuerySearch({
-        title,
-        tags: videoData.tags,
-        channel: videoData.channel,
-        uploader: videoData.uploader,
-      })
 
       logger.succeed()
       return {
         id: videoUrl,
         path: downloadedSongPath,
-        spotifyQuerySearch: querySearch,
+        title: title,
+        spotifyQuerySearch: title,
       }
     } catch (err: any) {
       logger.fail(ErrorTypes.DOWNLOAD, "downloadSong()", err.stderr || err.message || err)
@@ -118,13 +122,6 @@ class Downloader {
       logger.fail(ErrorTypes.DOWNLOAD, "downloadSongAndGetPath()", err.stderr || err.message || err)
       throw new Error(err)
     }
-  }
-
-  private getQuerySearch({ title, tags, channel, uploader }: VideoData): string {
-    const extraInfo = tags?.length
-      ? tags?.join(" ").slice(0, 250 - (title?.length || 0)) || ""
-      : channel || uploader || ""
-    return `${title} ${extraInfo}`
   }
 
   private getSongPathFromLog(log: string): string | null {

@@ -14,5 +14,6 @@ export type VideoData = {
 export type DownloadedSongData = {
   id: string
   path: string
+  title: string
   spotifyQuerySearch: string
 }
