@@ -1,5 +1,6 @@
 import { exec } from "child_process"
 import { promisify } from "util"
+import notifier from "../notifier/notifier"
 import { ErrorTypes } from "../types/errors"
 import logger from "../utils/logger"
 import { DownloadSourceFrom } from "./types"
@@ -19,6 +20,7 @@ class DownloadSources {
   }) {
     this.downloadFrom = downloadFrom
     this.urlSourceToDownload = urlSourceToDownload
+    notifier.downloadFrom(downloadFrom)
   }
 
   async getSongsUrlsToDownload(): Promise<string[]> {

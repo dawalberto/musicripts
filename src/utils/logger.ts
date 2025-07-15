@@ -1,6 +1,6 @@
 import { blueBright, greenBright, red, redBright, yellowBright } from "colorette"
 import ora, { Ora } from "ora"
-import { ErrorTypes } from "../downloader/types"
+import { ErrorTypes } from "../types/errors"
 
 class Logger {
   #spinner: Ora | null = null

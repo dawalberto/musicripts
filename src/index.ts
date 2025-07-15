@@ -3,6 +3,7 @@ import DownloadSources from "./download-sources/download-sources"
 import { DownloadSourceFrom } from "./download-sources/types"
 import Downloader from "./downloader/downloader"
 import Metadater from "./metadater/metadater"
+import notifier from "./notifier/notifier"
 import { AppInitializer } from "./utils/app-initializer"
 import logger from "./utils/logger"
 import MusicServer from "./utils/music-server"
@@ -36,9 +37,12 @@ async function main() {
     const metadater = new Metadater(downloadedSongsData)
     await metadater.init()
 
+    // TODO - Normalize song files
+
     const musicServer = new MusicServer()
     await musicServer.rescanLibrary()
-    // TODO - Send notification
+
+    await notifier.sendNotification()
     process.exit(0)
   } catch (error) {
     logger.failAndPersist()

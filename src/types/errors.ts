@@ -15,4 +15,6 @@ export enum ErrorTypes {
   SET_METADATA_TO_MP3 = "SET_METADATA_TO_MP3",
   // MusicServer
   RESCAN_LIBRARY = "RESCAN_LIBRARY",
+  // Notifier
+  SEND_NOTIFICATION = "SEND_NOTIFICATION",
 }
