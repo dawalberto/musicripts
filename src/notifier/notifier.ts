@@ -36,7 +36,7 @@ class Notifier {
 
   async sendNotification() {
     try {
-      logger.start("Sending notification...")
+      logger.start("📢 Sending notification...")
       if (!this._downloadFrom) {
         throw new Error("Download source not set")
       }

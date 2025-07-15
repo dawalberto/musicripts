@@ -14,6 +14,7 @@ export const ENVIRONMENT_VARIABLES_REQUIRED = [
 export const DEPENDENCIES_REQUIRED = [
   "yt-dlp", // YouTube downloader
   "ffmpeg", // TODO - Find out if really needed
+  "mp3gain", // For normalizing MP3s
 ]
 
 if (nodeEnv === NodeEnv.PRODUCTION) {

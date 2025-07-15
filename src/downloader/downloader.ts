@@ -42,7 +42,7 @@ class Downloader {
         const songData = await this.downloadSong(videoUrl)
         downloadedSongsData.push(songData)
         notifier.addDownloadedSong(songData.title, songData.artist)
-        logger.start(`Downloaded ${i + 1} of ${this.videosUrlsToDownload.length} songs`)
+        logger.start(`💾 Downloaded ${i + 1} of ${this.videosUrlsToDownload.length} songs`)
       } catch (err: any) {
         logger.fail(ErrorTypes.DOWNLOAD, "download()", err.stderr || err.message || err)
       }
@@ -70,7 +70,7 @@ class Downloader {
         throw new Error("No title found for the video. Cannot proceed with download.")
       }
 
-      logger.start(`Downloading song: ${title}`)
+      logger.start(`💾 Downloading song: ${title}`)
       const downloadedSongPath = await this.downloadSongAndGetPath(videoUrl)
 
       logger.succeed()

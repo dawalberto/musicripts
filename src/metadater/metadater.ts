@@ -20,7 +20,7 @@ class Metadater {
 
   private async setMetadataToDownloadedSongsData(): Promise<void> {
     for (const song of this.downloadedSongsData) {
-      logger.start(`Fetching and setting metadata for song: ${song.title}`)
+      logger.start(`⌗ Fetching and setting metadata for song: ${song.title}`)
       const metadata = await this.getMetadataFromQuery(song.spotifyQuerySearch)
       if (metadata) {
         await this.setMetadataToMp3(song.path, metadata)

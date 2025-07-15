@@ -3,6 +3,7 @@ import DownloadSources from "./download-sources/download-sources"
 import { DownloadSourceFrom } from "./download-sources/types"
 import Downloader from "./downloader/downloader"
 import Metadater from "./metadater/metadater"
+import Normalizer from "./normalizer/normalizer"
 import notifier from "./notifier/notifier"
 import { AppInitializer } from "./utils/app-initializer"
 import logger from "./utils/logger"
@@ -19,12 +20,12 @@ async function main() {
 
   try {
     new AppInitializer()
+    // TODO - Show help if no arguments are passed and exit
 
     const downloaderSources = new DownloadSources({
       downloadFrom: DownloadSourceFrom.SONGS_GIST,
       urlSourceToDownload: songsGistUrl,
     })
-    // TODO - Show help if no arguments are passed and exit
     const videosUrlsToDownload = await downloaderSources.getSongsUrlsToDownload()
     if (videosUrlsToDownload.length === 0) {
       logger.warn("No URLs to download found or all urls already downloaded previously.")
@@ -34,10 +35,11 @@ async function main() {
     const downloader = new Downloader({ videosUrlsToDownload })
     const downloadedSongsData = await downloader.download()
 
+    const normalizer = new Normalizer(downloadedSongsData)
+    await normalizer.init()
+
     const metadater = new Metadater(downloadedSongsData)
     await metadater.init()
-
-    // TODO - Normalize song files
 
     const musicServer = new MusicServer()
     await musicServer.rescanLibrary()

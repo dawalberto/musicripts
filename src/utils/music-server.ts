@@ -9,7 +9,7 @@ class MusicServer {
 
   public async rescanLibrary(): Promise<void> {
     try {
-      logger.start("Rescanning music library...")
+      logger.start("📡 Rescanning music library...")
       await execPromise(`docker exec navidrome /app/navidrome scan`)
       logger.succeed()
     } catch (error: any) {
