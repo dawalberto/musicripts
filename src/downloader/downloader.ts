@@ -5,30 +5,31 @@ import {
   CHARACTERS_TO_REMOVE,
   YOUTUBE_TITLE_TAGS_ENGLISH,
   YOUTUBE_TITLE_TAGS_SPANISH,
-} from "../constants"
-import notifier from "../notifier/notifier"
-import { ErrorTypes } from "../types/errors"
-import logger from "../utils/logger"
-import { DownloadedSongData, VideoData } from "./types"
+} from "../constants.js"
+import notifier from "../notifier/notifier.js"
+import { ErrorTypes } from "../types/errors.js"
+import logger from "../utils/logger.js"
+import { DownloadedSongData, VideoData } from "./types.js"
 
 const execPromise = promisify(exec)
 
 class Downloader {
-  private videosUrlsToDownload: string[]
-  private outputDir: string = process.env.OUTPUT_DIR || ""
+  private songsUrlsToDownload: string[]
+  private outputDir: string
+  private archiveFile: string
 
   constructor({
-    videosUrlsToDownload,
+    songsUrlsToDownload,
     outputDir,
+    archiveFile,
   }: {
-    videosUrlsToDownload: string[]
-    outputDir?: string
+    songsUrlsToDownload: string[]
+    outputDir: string
+    archiveFile: string
   }) {
-    this.videosUrlsToDownload = videosUrlsToDownload
-
-    // TODO - Check this in app-initializer
-    outputDir && (this.outputDir = outputDir)
-    this.ensureOutputDir()
+    this.songsUrlsToDownload = songsUrlsToDownload
+    this.outputDir = outputDir
+    this.archiveFile = archiveFile
   }
 
   async download() {
@@ -36,13 +37,13 @@ class Downloader {
 
     const downloadedSongsData: DownloadedSongData[] = []
 
-    for (let i = 0; i < this.videosUrlsToDownload.length; i++) {
-      const videoUrl = this.videosUrlsToDownload[i]
+    for (let i = 0; i < this.songsUrlsToDownload.length; i++) {
+      const videoUrl = this.songsUrlsToDownload[i]
       try {
         const songData = await this.downloadSong(videoUrl)
         downloadedSongsData.push(songData)
         notifier.addDownloadedSong(songData.title, songData.artist)
-        logger.start(`💾 Downloaded ${i + 1} of ${this.videosUrlsToDownload.length} songs`)
+        logger.start(`💾 Downloaded ${i + 1} of ${this.songsUrlsToDownload.length} songs`)
       } catch (err: any) {
         logger.fail(ErrorTypes.DOWNLOAD, "download()", err.stderr || err.message || err)
       }
@@ -100,7 +101,7 @@ class Downloader {
 
   private async downloadSongAndGetPath(videoUrl: string): Promise<string> {
     try {
-      const downloadCmd = `yt-dlp -f bestaudio -x --audio-format mp3 --audio-quality 0 --restrict-filenames --download-archive "${process.env.DOWNLOADS_ARCHIVE_PATH}" -o "${this.outputDir}/%(title)s.%(ext)s" "${videoUrl}"`
+      const downloadCmd = `yt-dlp -f bestaudio -x --audio-format mp3 --audio-quality 0 --restrict-filenames --download-archive "${this.archiveFile}" -o "${this.outputDir}/%(title)s.%(ext)s" "${videoUrl}"`
       const { stdout: downloadLog } = await execPromise(downloadCmd)
       const songPath = this.getSongPathFromLog(downloadLog)
 
@@ -139,12 +140,6 @@ class Downloader {
       sanitized = sanitized.replaceAll(tag, "").trim()
     }
     return sanitized
-  }
-
-  private ensureOutputDir(): void {
-    if (!fs.existsSync(this.outputDir)) {
-      fs.mkdirSync(this.outputDir, { recursive: true })
-    }
   }
 }
 

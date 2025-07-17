@@ -8,6 +8,9 @@
     "dev": "nodemon --exec tsx src/index.ts",
     "test": "jest"
   },
+  "engines": {
+    "node": ">=22.0.0"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -27,6 +30,7 @@
     "colorette": "^2.0.20",
     "dotenv": "^17.0.1",
     "node-id3": "^0.2.9",
-    "ora": "^8.2.0"
+    "ora": "^8.2.0",
+    "yargs": "^18.0.0"
   }
 }

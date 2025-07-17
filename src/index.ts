@@ -1,38 +1,37 @@
 import "dotenv/config"
-import DownloadSources from "./download-sources/download-sources"
-import { DownloadSourceFrom } from "./download-sources/types"
-import Downloader from "./downloader/downloader"
-import Metadater from "./metadater/metadater"
-import Normalizer from "./normalizer/normalizer"
-import notifier from "./notifier/notifier"
-import { AppInitializer } from "./utils/app-initializer"
-import logger from "./utils/logger"
-import MusicServer from "./utils/music-server"
+import DownloadSources from "./download-sources/download-sources.js"
+import Downloader from "./downloader/downloader.js"
+import Metadater from "./metadater/metadater.js"
+import Normalizer from "./normalizer/normalizer.js"
+import notifier from "./notifier/notifier.js"
+import { AppInitializer } from "./utils/app-initializer.js"
+import logger from "./utils/logger.js"
+import MusicServer from "./utils/music-server.js"
 
 async function main() {
-  const songUrl = "https://www.youtube.com/watch?v=O4f58BU_Hbs" // single song
-  const playlistUrl =
-    "https://youtube.com/playlist?list=PLqcOK7ksKCFAgur0Jo_724vRjVfYwPO6r&feature=shared" // single playlist
-  const playlistsGistUrl =
-    "https://gist.githubusercontent.com/dawalberto/f02117bfd6932d2fb79a96a2f7bf7f16/raw/playlists" // set of playlists
-  const songsGistUrl =
-    "https://gist.githubusercontent.com/dawalberto/a45c871dad26c0bd6341892f3a5c7b16/raw/songs" // set of songs
+  // TODO - Handle trying to save song already downloaded(it is possible by passing a new --archive but same --output)
+  // TODO - Save title and artist for notifying from metadata if available
+  // TODO - Make normalizer optional
+  // TODO - Tests
+  // TODO - Split notifier message into multiple messages if too long
+  // TODO - Github releases
+  // TODO - Github actions to run this script on a schedule
 
   try {
-    new AppInitializer()
-    // TODO - Show help if no arguments are passed and exit
+    const { downloadFrom, urlSourceToDownload, outputDir, archiveFile } = new AppInitializer()
 
     const downloaderSources = new DownloadSources({
-      downloadFrom: DownloadSourceFrom.SONGS_GIST,
-      urlSourceToDownload: songsGistUrl,
+      downloadFrom,
+      urlSourceToDownload,
+      archiveFile,
     })
-    const videosUrlsToDownload = await downloaderSources.getSongsUrlsToDownload()
-    if (videosUrlsToDownload.length === 0) {
-      logger.warn("No URLs to download found or all urls already downloaded previously.")
-      process.exit(0)
-    }
+    const songsUrlsToDownload = await downloaderSources.getSongsUrlsToDownload()
 
-    const downloader = new Downloader({ videosUrlsToDownload })
+    const downloader = new Downloader({
+      songsUrlsToDownload,
+      outputDir,
+      archiveFile,
+    })
     const downloadedSongsData = await downloader.download()
 
     const normalizer = new Normalizer(downloadedSongsData)

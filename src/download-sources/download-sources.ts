@@ -1,25 +1,29 @@
 import { exec } from "child_process"
 import { promisify } from "util"
-import notifier from "../notifier/notifier"
-import { ErrorTypes } from "../types/errors"
-import logger from "../utils/logger"
-import { DownloadSourceFrom } from "./types"
+import notifier from "../notifier/notifier.js"
+import { ErrorTypes } from "../types/errors.js"
+import logger from "../utils/logger.js"
+import { DownloadSourceFrom } from "./types.js"
 
 const execPromise = promisify(exec)
 
 class DownloadSources {
   private downloadFrom: DownloadSourceFrom
   private urlSourceToDownload: string
+  private archiveFile: string
 
   constructor({
     downloadFrom,
     urlSourceToDownload,
+    archiveFile,
   }: {
     downloadFrom: DownloadSourceFrom
     urlSourceToDownload: string
+    archiveFile: string
   }) {
     this.downloadFrom = downloadFrom
     this.urlSourceToDownload = urlSourceToDownload
+    this.archiveFile = archiveFile
     notifier.downloadFrom(downloadFrom)
   }
 
@@ -44,7 +48,12 @@ class DownloadSources {
     const alreadyDownloaded: boolean[] = await Promise.all(
       songsUrls.map((url) => this.isVideoAlreadyDownloaded(url))
     )
-    return songsUrls.filter((_, i) => !alreadyDownloaded[i])
+    const songsUrlsToDownload = songsUrls.filter((_, i) => !alreadyDownloaded[i])
+    if (!songsUrlsToDownload.length) {
+      logger.warn("⚠️  No URLs to download found or all urls already downloaded previously.")
+      process.exit(0)
+    }
+    return songsUrlsToDownload
   }
 
   private async fetchGist(): Promise<string[]> {
@@ -124,7 +133,7 @@ class DownloadSources {
 
   private async isVideoAlreadyDownloaded(url: string): Promise<boolean> {
     const videoId = new URL(url).searchParams.get("v") || ""
-    const { stdout } = await execPromise(`cat ${process.env.DOWNLOADS_ARCHIVE_PATH}`)
+    const { stdout } = await execPromise(`cat ${this.archiveFile}`)
     return stdout.includes(videoId)
   }
 }

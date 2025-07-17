@@ -1,8 +1,8 @@
 import NodeID3 from "node-id3"
-import { DownloadedSongData } from "../downloader/types"
-import { ErrorTypes } from "../types/errors"
-import logger from "../utils/logger"
-import { SongMetadataTags, SpotifyTrack, SpotifyTrackSearchResponse } from "./types"
+import { DownloadedSongData } from "../downloader/types.js"
+import { ErrorTypes } from "../types/errors.js"
+import logger from "../utils/logger.js"
+import { SongMetadataTags, SpotifyTrack, SpotifyTrackSearchResponse } from "./types.js"
 
 class Metadater {
   private spotifyToken: string | null = null

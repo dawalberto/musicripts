@@ -1,8 +1,8 @@
 import { exec } from "child_process"
 import { promisify } from "util"
-import { DownloadedSongData } from "../downloader/types"
-import { ErrorTypes } from "../types/errors"
-import logger from "../utils/logger"
+import { DownloadedSongData } from "../downloader/types.js"
+import { ErrorTypes } from "../types/errors.js"
+import logger from "../utils/logger.js"
 const execPromise = promisify(exec)
 
 class Normalizer {

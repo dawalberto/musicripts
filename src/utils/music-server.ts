@@ -1,7 +1,7 @@
 import { exec } from "child_process"
 import { promisify } from "util"
-import { ErrorTypes } from "../types/errors"
-import logger from "./logger"
+import { ErrorTypes } from "../types/errors.js"
+import logger from "./logger.js"
 const execPromise = promisify(exec)
 
 class MusicServer {
