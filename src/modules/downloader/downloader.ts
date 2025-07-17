@@ -5,10 +5,10 @@ import {
   CHARACTERS_TO_REMOVE,
   YOUTUBE_TITLE_TAGS_ENGLISH,
   YOUTUBE_TITLE_TAGS_SPANISH,
-} from "../constants.js"
+} from "../../constants.js"
+import { ErrorTypes } from "../../types.js"
+import logger from "../logger/logger.js"
 import notifier from "../notifier/notifier.js"
-import { ErrorTypes } from "../types/errors.js"
-import logger from "../utils/logger.js"
 import { DownloadedSongData, VideoData } from "./types.js"
 
 const execPromise = promisify(exec)

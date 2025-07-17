@@ -1,12 +1,12 @@
 import "dotenv/config"
-import DownloadSources from "./download-sources/download-sources.js"
-import Downloader from "./downloader/downloader.js"
-import Metadater from "./metadater/metadater.js"
-import Normalizer from "./normalizer/normalizer.js"
-import notifier from "./notifier/notifier.js"
-import { AppInitializer } from "./utils/app-initializer.js"
-import logger from "./utils/logger.js"
-import MusicServer from "./utils/music-server.js"
+import { AppInitializer } from "./modules/app-initializer/app-initializer.js"
+import DownloadSources from "./modules/download-sources/download-sources.js"
+import Downloader from "./modules/downloader/downloader.js"
+import logger from "./modules/logger/logger.js"
+import Metadater from "./modules/metadater/metadater.js"
+import MusicServer from "./modules/music-server/music-server.js"
+import Normalizer from "./modules/normalizer/normalizer.js"
+import notifier from "./modules/notifier/notifier.js"
 
 async function main() {
   // TODO - Handle trying to save song already downloaded(it is possible by passing a new --archive but same --output)

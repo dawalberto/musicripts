@@ -1,8 +1,8 @@
 import { exec } from "child_process"
 import { promisify } from "util"
+import { ErrorTypes } from "../../types.js"
+import logger from "../logger/logger.js"
 import notifier from "../notifier/notifier.js"
-import { ErrorTypes } from "../types/errors.js"
-import logger from "../utils/logger.js"
 import { DownloadSourceFrom } from "./types.js"
 
 const execPromise = promisify(exec)

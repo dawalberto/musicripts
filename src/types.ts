@@ -1,3 +1,8 @@
+export enum NodeEnv {
+  DEVELOPMENT = "development",
+  PRODUCTION = "production",
+}
+
 export enum ErrorTypes {
   // AppInitializer
   MISSING_ENV_VARIABLES = "MISSING_ENV_VARIABLES",

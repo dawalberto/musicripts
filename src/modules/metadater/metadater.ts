@@ -1,7 +1,7 @@
 import NodeID3 from "node-id3"
+import { ErrorTypes } from "../../types.js"
 import { DownloadedSongData } from "../downloader/types.js"
-import { ErrorTypes } from "../types/errors.js"
-import logger from "../utils/logger.js"
+import logger from "../logger/logger.js"
 import { SongMetadataTags, SpotifyTrack, SpotifyTrackSearchResponse } from "./types.js"
 
 class Metadater {

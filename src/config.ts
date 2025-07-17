@@ -1,6 +1,9 @@
-import { NodeEnv } from "./types/common.js"
+import { NodeEnv } from "./types"
 
 const nodeEnv = process.env.NODE_ENV as NodeEnv | undefined
+
+export const IS_PRODUCTION = nodeEnv === NodeEnv.PRODUCTION
+export const IS_DEVELOPMENT = nodeEnv === NodeEnv.DEVELOPMENT
 
 export const ENVIRONMENT_VARIABLES_REQUIRED = [
   "SPOTIFY_CLIENT_ID", // TODO - MAKE IT OPTIONAL
@@ -19,6 +22,6 @@ export const DEPENDENCIES_REQUIRED = [
   "mp3gain", // For normalizing MP3s
 ]
 
-if (nodeEnv === NodeEnv.PRODUCTION) {
+if (IS_PRODUCTION) {
   DEPENDENCIES_REQUIRED.push("docker") // To rescan the music library
 }

@@ -2,14 +2,18 @@ import { execSync } from "child_process"
 import fs from "fs"
 import yargs from "yargs"
 import { hideBin } from "yargs/helpers"
-import { DEPENDENCIES_REQUIRED, ENVIRONMENT_VARIABLES_REQUIRED } from "../config.js"
+import {
+  DEPENDENCIES_REQUIRED,
+  ENVIRONMENT_VARIABLES_REQUIRED,
+  IS_DEVELOPMENT,
+} from "../../config.js"
+import { ErrorTypes } from "../../types.js"
 import { DownloadSourceFrom } from "../download-sources/types.js"
-import { ErrorTypes } from "../types/errors.js"
-import logger from "./logger.js"
+import logger from "../logger/logger.js"
 
 export class AppInitializer {
   downloadFrom: DownloadSourceFrom = DownloadSourceFrom.SONGS_GIST
-  urlSourceToDownload: string = ""
+  urlSourceToDownload: string = process.env.DEVELOPMENT_SONGS_GIST_URL || ""
   outputDir: string = process.env.OUTPUT_DIR || ""
   archiveFile: string = process.env.DOWNLOADS_ARCHIVE_PATH || ""
 
@@ -51,6 +55,10 @@ export class AppInitializer {
   }
 
   private getArguments() {
+    if (IS_DEVELOPMENT) {
+      return
+    }
+
     const argv = yargs(hideBin(process.argv))
       .option("downloadFrom", {
         alias: "from",

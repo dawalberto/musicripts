@@ -1,6 +1,6 @@
+import { ErrorTypes } from "../../types.js"
 import { DownloadSourceFrom } from "../download-sources/types.js"
-import { ErrorTypes } from "../types/errors.js"
-import logger from "../utils/logger.js"
+import logger from "../logger/logger.js"
 
 class Notifier {
   private _downloadFrom: string | null = null
