@@ -3,8 +3,8 @@ import { DownloadSourceFrom, logger } from "../index.js"
 
 class Notifier {
   private _downloadFrom: string | null = null
-  private _downloadedSongsTitles: Set<string> = new Set()
-  private _downloadedSongsArtists: Set<string> = new Set()
+  private _downloadedSongsTitles: Map<string, string> = new Map()
+  private _downloadedSongsArtists: Map<string, string> = new Map()
   // private spaceAvailable: number | null = null // TODO
 
   constructor() {}
@@ -28,9 +28,9 @@ class Notifier {
     }
   }
 
-  addDownloadedSong(title: string, artist: string) {
-    this._downloadedSongsTitles.add(title)
-    this._downloadedSongsArtists.add(artist)
+  addDownloadedSong({ id, title, artist }: { id: string; title: string; artist: string }) {
+    this._downloadedSongsTitles.set(id, title)
+    this._downloadedSongsArtists.set(id, artist)
   }
 
   async sendNotification() {
@@ -83,12 +83,10 @@ class Notifier {
   }
 
   private mountMessage(): string {
-    const songs = Array.from(this._downloadedSongsTitles)
-      .map((song) => `🎵 ${song}`)
-      .join("\n")
-    const artists = Array.from(this._downloadedSongsArtists)
-      .map((artist) => `🎤 ${artist}`)
-      .join("\n")
+    const songsTitles = Array.from(this._downloadedSongsTitles.entries())
+    const songsArtists = Array.from(new Set(Array.from(this._downloadedSongsArtists.values())))
+    const songs = songsTitles.map(([id, title]) => `🎵 <a href="${id}">${title}</a>`).join("\n")
+    const artists = songsArtists.map((artist) => `🎤 ${artist}`).join("\n")
 
     let date = new Date().toLocaleDateString("es-ES", {
       weekday: "long",
@@ -100,7 +98,7 @@ class Notifier {
     })
     date = date.charAt(0).toUpperCase() + date.slice(1)
 
-    return `<b>${this._downloadedSongsTitles.size} canciones añadidas:</b>\n${songs} \n\n<b>De ${this._downloadedSongsArtists.size} artistas:</b>\n${artists} \n\n<i>🌐 ${this._downloadFrom}</i>\n<i>🗓️ ${date}</i>`
+    return `<b>${songsTitles.length} canciones añadidas:</b>\n${songs} \n\n<b>De ${songsArtists.length} artistas:</b>\n${artists} \n\n<i>🌐 ${this._downloadFrom}</i>\n<i>🗓️ ${date}</i>`
   }
 }
 

@@ -1,4 +1,4 @@
-export const YOUTUBE_TITLE_TAGS_ENGLISH = [
+export const COMMON_TITLE_TAGS_ENGLISH = [
   "(Official Video)",
   "[Official Video]",
   "Official Video",
@@ -52,7 +52,7 @@ export const YOUTUBE_TITLE_TAGS_ENGLISH = [
   "Trailer",
 ]
 
-export const YOUTUBE_TITLE_TAGS_SPANISH = [
+export const COMMON_TITLE_TAGS_SPANISH = [
   "(Video Oficial)",
   "(Vídeo Oficial)",
   "[Video Oficial]",
@@ -113,7 +113,7 @@ export const YOUTUBE_TITLE_TAGS_SPANISH = [
   "Videoclip Oficial",
 ]
 
-export const CHARACTERS_TO_REMOVE = [
+export const CONFLICTING_TITLES_CHARACTERS = [
   "!",
   "@",
   "#",

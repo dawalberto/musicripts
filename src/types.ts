@@ -21,7 +21,7 @@ export enum ErrorTypes {
   // Normalizer
   NORMALIZE_DOWNLOADS = "NORMALIZE_DOWNLOADS",
   // MusicServer
-  RESCAN_LIBRARY = "RESCAN_LIBRARY",
+  SCAN_LIBRARY = "SCAN_LIBRARY",
   // Notifier
   SEND_NOTIFICATION = "SEND_NOTIFICATION",
 }

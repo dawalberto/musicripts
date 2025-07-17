@@ -19,16 +19,21 @@ export class Metadater {
 
   private async setMetadataToDownloadedSongsData(): Promise<void> {
     for (const song of this.downloadedSongsData) {
-      logger.start(`⌗ Fetching and setting metadata for song: ${song.title}`)
-      const metadata = await this.getMetadataFromQuery(song.spotifyQuerySearch)
+      const { id, title, artist, path, spotifyQuerySearch } = song
+      logger.start(`⌗ Fetching and setting metadata for song: ${title}`)
+      const metadata = await this.getMetadataFromQuery(spotifyQuerySearch)
       if (metadata) {
-        await this.setMetadataToMp3(song.path, metadata)
-        notifier.addDownloadedSong(metadata.title, metadata.artist.join(", "))
+        await this.setMetadataToMp3(path, metadata)
+        notifier.addDownloadedSong({
+          id: id,
+          title: metadata.title,
+          artist: metadata.artist.join(", "),
+        })
         logger.succeed()
       } else {
-        this.setMetadataToMp3(song.path, {
-          title: song.title,
-          artist: [song.artist],
+        this.setMetadataToMp3(path, {
+          title: title,
+          artist: [artist],
           album: "",
           albumArtist: [],
           trackNumber: 0,
@@ -38,9 +43,8 @@ export class Metadater {
           explicit: false,
           coverart: null,
         })
-        notifier.addDownloadedSong(song.title, song.artist)
         logger.warn(
-          `No metadata found for song: ${song.title}. Setting default metadata(only title and artist).`
+          `No metadata found for song: ${title}. Setting default metadata(only title and artist).`
         )
       }
     }

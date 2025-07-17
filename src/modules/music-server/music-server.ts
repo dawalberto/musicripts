@@ -7,17 +7,13 @@ const execPromise = promisify(exec)
 export class MusicServer {
   constructor() {}
 
-  public async rescanLibrary(): Promise<void> {
+  public async scanLibrary(): Promise<void> {
     try {
-      logger.start("📡 Rescanning music library...")
+      logger.start("📡 Scanning music library...")
       await execPromise(`docker exec navidrome /app/navidrome scan`)
       logger.succeed()
     } catch (error: any) {
-      logger.fail(
-        ErrorTypes.RESCAN_LIBRARY,
-        "rescanLibrary()",
-        error.stderr || error.message || error
-      )
+      logger.fail(ErrorTypes.SCAN_LIBRARY, "scanLibrary()", error.stderr || error.message || error)
     }
   }
 }

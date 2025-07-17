@@ -43,7 +43,7 @@ async function main() {
     await metadater.init()
 
     const musicServer = new MusicServer()
-    await musicServer.rescanLibrary()
+    await musicServer.scanLibrary()
 
     await notifier.sendNotification()
     process.exit(0)

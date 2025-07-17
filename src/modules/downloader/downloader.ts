@@ -1,13 +1,13 @@
 import {
-  CHARACTERS_TO_REMOVE,
-  YOUTUBE_TITLE_TAGS_ENGLISH,
-  YOUTUBE_TITLE_TAGS_SPANISH,
+  COMMON_TITLE_TAGS_ENGLISH,
+  COMMON_TITLE_TAGS_SPANISH,
+  CONFLICTING_TITLES_CHARACTERS,
 } from "@/constants.js"
 import { ErrorTypes } from "@/types.js"
 import { exec } from "child_process"
 import fs from "fs"
 import { promisify } from "util"
-import { logger } from "../index.js"
+import { logger, notifier } from "../index.js"
 import { DownloadedSongData, VideoData } from "./types.js"
 
 const execPromise = promisify(exec)
@@ -41,6 +41,11 @@ export class Downloader {
       try {
         const songData = await this.downloadSong(videoUrl)
         downloadedSongsData.push(songData)
+        notifier.addDownloadedSong({
+          id: songData.id,
+          title: songData.title,
+          artist: songData.artist,
+        })
         logger.start(`💾 Downloaded ${i + 1} of ${this.songsUrlsToDownload.length} songs`)
       } catch (err: any) {
         logger.fail(ErrorTypes.DOWNLOAD, "download()", err.stderr || err.message || err)
@@ -55,9 +60,9 @@ export class Downloader {
     try {
       const videoData = await this.getVideoData(videoUrl)
       const title = this.sanitizeTitle(videoData.title || videoData.fulltitle || "", [
-        ...YOUTUBE_TITLE_TAGS_ENGLISH,
-        ...YOUTUBE_TITLE_TAGS_SPANISH,
-        ...CHARACTERS_TO_REMOVE,
+        ...COMMON_TITLE_TAGS_ENGLISH,
+        ...COMMON_TITLE_TAGS_SPANISH,
+        ...CONFLICTING_TITLES_CHARACTERS,
       ])
 
       if (!title) {
