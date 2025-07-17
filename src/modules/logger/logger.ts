@@ -1,6 +1,6 @@
+import { ErrorTypes } from "@/types.js"
 import { blueBright, greenBright, red, redBright, yellowBright } from "colorette"
 import ora, { Ora } from "ora"
-import { ErrorTypes } from "../../types.js"
 
 class Logger {
   #spinner: Ora | null = null
@@ -64,5 +64,4 @@ class Logger {
   }
 }
 
-const logger = new Logger()
-export default logger
+export const logger = new Logger()

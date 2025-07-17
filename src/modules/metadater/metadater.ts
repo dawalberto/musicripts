@@ -1,10 +1,9 @@
+import { ErrorTypes } from "@/types.js"
 import NodeID3 from "node-id3"
-import { ErrorTypes } from "../../types.js"
-import { DownloadedSongData } from "../downloader/types.js"
-import logger from "../logger/logger.js"
+import { DownloadedSongData, logger } from "../index.js"
 import { SongMetadataTags, SpotifyTrack, SpotifyTrackSearchResponse } from "./types.js"
 
-class Metadater {
+export class Metadater {
   private spotifyToken: string | null = null
   private downloadedSongsData: DownloadedSongData[]
 

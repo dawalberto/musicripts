@@ -1,10 +1,10 @@
+import { ErrorTypes } from "@/types.js"
 import { exec } from "child_process"
 import { promisify } from "util"
-import { ErrorTypes } from "../../types.js"
-import logger from "../logger/logger.js"
+import { logger } from "../index.js"
 const execPromise = promisify(exec)
 
-class MusicServer {
+export class MusicServer {
   constructor() {}
 
   public async rescanLibrary(): Promise<void> {
@@ -21,5 +21,3 @@ class MusicServer {
     }
   }
 }
-
-export default MusicServer

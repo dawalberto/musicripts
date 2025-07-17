@@ -1,6 +1,5 @@
-import { ErrorTypes } from "../../types.js"
-import { DownloadSourceFrom } from "../download-sources/types.js"
-import logger from "../logger/logger.js"
+import { ErrorTypes } from "@/types.js"
+import { DownloadSourceFrom, logger } from "../index.js"
 
 class Notifier {
   private _downloadFrom: string | null = null
@@ -105,5 +104,4 @@ class Notifier {
   }
 }
 
-const notifier = new Notifier()
-export default notifier
+export const notifier = new Notifier()

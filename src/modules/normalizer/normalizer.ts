@@ -1,11 +1,10 @@
+import { ErrorTypes } from "@/types.js"
 import { exec } from "child_process"
 import { promisify } from "util"
-import { ErrorTypes } from "../../types.js"
-import { DownloadedSongData } from "../downloader/types.js"
-import logger from "../logger/logger.js"
+import { DownloadedSongData, logger } from "../index.js"
 const execPromise = promisify(exec)
 
-class Normalizer {
+export class Normalizer {
   private _downloadedSongs: DownloadedSongData[]
 
   constructor(downloadedSongs: DownloadedSongData[]) {
@@ -33,5 +32,3 @@ class Normalizer {
     }
   }
 }
-
-export default Normalizer

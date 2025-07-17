@@ -1,19 +1,18 @@
-import { exec } from "child_process"
-import fs from "fs"
-import { promisify } from "util"
 import {
   CHARACTERS_TO_REMOVE,
   YOUTUBE_TITLE_TAGS_ENGLISH,
   YOUTUBE_TITLE_TAGS_SPANISH,
-} from "../../constants.js"
-import { ErrorTypes } from "../../types.js"
-import logger from "../logger/logger.js"
-import notifier from "../notifier/notifier.js"
+} from "@/constants.js"
+import { ErrorTypes } from "@/types.js"
+import { exec } from "child_process"
+import fs from "fs"
+import { promisify } from "util"
+import { logger, notifier } from "../index.js"
 import { DownloadedSongData, VideoData } from "./types.js"
 
 const execPromise = promisify(exec)
 
-class Downloader {
+export class Downloader {
   private songsUrlsToDownload: string[]
   private outputDir: string
   private archiveFile: string
@@ -142,5 +141,3 @@ class Downloader {
     return sanitized
   }
 }
-
-export default Downloader

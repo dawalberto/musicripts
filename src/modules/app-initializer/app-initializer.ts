@@ -1,15 +1,10 @@
+import { DEPENDENCIES_REQUIRED, ENVIRONMENT_VARIABLES_REQUIRED } from "@/config.js"
+import { ErrorTypes, NodeEnv } from "@/types.js"
 import { execSync } from "child_process"
 import fs from "fs"
 import yargs from "yargs"
 import { hideBin } from "yargs/helpers"
-import {
-  DEPENDENCIES_REQUIRED,
-  ENVIRONMENT_VARIABLES_REQUIRED,
-  IS_DEVELOPMENT,
-} from "../../config.js"
-import { ErrorTypes } from "../../types.js"
-import { DownloadSourceFrom } from "../download-sources/types.js"
-import logger from "../logger/logger.js"
+import { DownloadSourceFrom, logger } from "../index.js"
 
 export class AppInitializer {
   downloadFrom: DownloadSourceFrom = DownloadSourceFrom.SONGS_GIST
@@ -55,7 +50,8 @@ export class AppInitializer {
   }
 
   private getArguments() {
-    if (IS_DEVELOPMENT) {
+    if (process.env.NODE_ENV === NodeEnv.DEVELOPMENT) {
+      // TODO - Find another way
       return
     }
 

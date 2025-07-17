@@ -1,13 +1,12 @@
+import { ErrorTypes } from "@/types.js"
 import { exec } from "child_process"
 import { promisify } from "util"
-import { ErrorTypes } from "../../types.js"
-import logger from "../logger/logger.js"
-import notifier from "../notifier/notifier.js"
+import { logger, notifier } from "../index.js"
 import { DownloadSourceFrom } from "./types.js"
 
 const execPromise = promisify(exec)
 
-class DownloadSources {
+export class DownloadSources {
   private downloadFrom: DownloadSourceFrom
   private urlSourceToDownload: string
   private archiveFile: string
@@ -137,5 +136,3 @@ class DownloadSources {
     return stdout.includes(videoId)
   }
 }
-
-export default DownloadSources
