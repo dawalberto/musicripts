@@ -1,6 +1,6 @@
 import { ErrorTypes } from "@/types.js"
 import NodeID3 from "node-id3"
-import { DownloadedSongData, logger } from "../index.js"
+import { DownloadedSongData, logger, notifier } from "../index.js"
 import { SongMetadataTags, SpotifyTrack, SpotifyTrackSearchResponse } from "./types.js"
 
 export class Metadater {
@@ -23,11 +23,9 @@ export class Metadater {
       const metadata = await this.getMetadataFromQuery(song.spotifyQuerySearch)
       if (metadata) {
         await this.setMetadataToMp3(song.path, metadata)
+        notifier.addDownloadedSong(metadata.title, metadata.artist.join(", "))
         logger.succeed()
       } else {
-        logger.warn(
-          `No metadata found for song: ${song.title}. Setting default metadata(only title and artist).`
-        )
         this.setMetadataToMp3(song.path, {
           title: song.title,
           artist: [song.artist],
@@ -40,6 +38,10 @@ export class Metadater {
           explicit: false,
           coverart: null,
         })
+        notifier.addDownloadedSong(song.title, song.artist)
+        logger.warn(
+          `No metadata found for song: ${song.title}. Setting default metadata(only title and artist).`
+        )
       }
     }
   }

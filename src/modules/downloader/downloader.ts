@@ -7,7 +7,7 @@ import { ErrorTypes } from "@/types.js"
 import { exec } from "child_process"
 import fs from "fs"
 import { promisify } from "util"
-import { logger, notifier } from "../index.js"
+import { logger } from "../index.js"
 import { DownloadedSongData, VideoData } from "./types.js"
 
 const execPromise = promisify(exec)
@@ -41,7 +41,6 @@ export class Downloader {
       try {
         const songData = await this.downloadSong(videoUrl)
         downloadedSongsData.push(songData)
-        notifier.addDownloadedSong(songData.title, songData.artist)
         logger.start(`💾 Downloaded ${i + 1} of ${this.songsUrlsToDownload.length} songs`)
       } catch (err: any) {
         logger.fail(ErrorTypes.DOWNLOAD, "download()", err.stderr || err.message || err)
