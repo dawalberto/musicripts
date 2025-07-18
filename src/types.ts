@@ -1,18 +1,27 @@
-export enum ErrorType {
-  GET_VIDEO_TITLE_ERROR = "GET_VIDEO_TITLE_ERROR",
-  DOWNLOAD_VIDEO_ERROR = "DOWNLOAD_VIDEO_ERROR",
-  CONVERT_VIDEO_ERROR = "CONVERT_VIDEO_ERROR",
+export enum NodeEnv {
+  DEVELOPMENT = "development",
+  PRODUCTION = "production",
 }
 
-export type VideoData = {
-  title?: string
-  description?: string
-  tags?: string[]
-  channel?: string
-  uploader?: string
-  fulltitle?: string
-  duration_string?: string
-  release_date?: string
-  release_year?: number
-  is_live?: boolean
+export enum ErrorTypes {
+  // AppInitializer
+  MISSING_ENV_VARIABLES = "MISSING_ENV_VARIABLES",
+  MISSING_DEPENDENCIES = "MISSING_DEPENDENCIES",
+  // DownloadSources
+  GET_URLS_FROM_PLAYLIST = "GET_URLS_FROM_PLAYLIST",
+  GET_URLS_FROM_GIST = "GET_URLS_FROM_GIST",
+  FETCH = "FETCH",
+  // Downloader
+  DOWNLOAD = "DOWNLOAD",
+  GET_VIDEO_DATA = "GET_VIDEO_DATA",
+  // Metadater
+  METADATA_AUTH = "METADATA_AUTH",
+  GET_METADATA_FROM_QUERY = "GET_METADATA_FROM_QUERY",
+  SET_METADATA_TO_MP3 = "SET_METADATA_TO_MP3",
+  // Normalizer
+  NORMALIZE_DOWNLOADS = "NORMALIZE_DOWNLOADS",
+  // MusicServer
+  SCAN_LIBRARY = "SCAN_LIBRARY",
+  // Notifier
+  SEND_NOTIFICATION = "SEND_NOTIFICATION",
 }
